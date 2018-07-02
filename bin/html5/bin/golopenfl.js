@@ -1018,7 +1018,7 @@ $hxClasses["ApplicationMain"] = ApplicationMain;
 ApplicationMain.__name__ = ["ApplicationMain"];
 ApplicationMain.main = function() {
 	var projectName = "golopenfl";
-	var config = { build : "20", company : "iap", file : "golopenfl", fps : 60, name : "golopenfl", orientation : "", packageName : "golopenfl", version : "1.0.0", windows : [{ allowHighDPI : false, alwaysOnTop : false, antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, hidden : false, maximized : false, minimized : false, parameters : { }, resizable : true, stencilBuffer : true, title : "golopenfl", vsync : false, width : 800, x : null, y : null}]};
+	var config = { build : "1", company : "iap", file : "golopenfl", fps : 60, name : "golopenfl", orientation : "", packageName : "golopenfl", version : "1.0.0", windows : [{ allowHighDPI : false, alwaysOnTop : false, antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, hidden : false, maximized : false, minimized : false, parameters : { }, resizable : true, stencilBuffer : true, title : "golopenfl", vsync : false, width : 800, x : null, y : null}]};
 	lime_system_System.__registerEntryPoint(projectName,ApplicationMain.create,config);
 };
 ApplicationMain.create = function(config) {
@@ -3151,6 +3151,9 @@ var Main = function() {
 	openfl_display_Sprite.call(this);
 	this.resetBoard();
 	this.createDisplay();
+	this.distributeCells();
+	this.renderDisplay();
+	this.addEventListener("enterFrame",$bind(this,this.this_enterFrame));
 };
 $hxClasses["Main"] = Main;
 Main.__name__ = ["Main"];
@@ -3158,6 +3161,16 @@ Main.__super__ = openfl_display_Sprite;
 Main.prototype = $extend(openfl_display_Sprite.prototype,{
 	boardDef: null
 	,boardDisplay: null
+	,distributeCells: function() {
+		var _g = 0;
+		while(_g < 200) {
+			var i = _g++;
+			this.boardDef[Math.floor(Math.random() * Data.DIMENTIONS.x)][Math.floor(Math.random() * Data.DIMENTIONS.x)] = 1;
+		}
+	}
+	,getRand: function() {
+		return Math.floor(Math.random() * Data.DIMENTIONS.x);
+	}
 	,createDisplay: function() {
 		this.boardDisplay = [];
 		var _g1 = 0;
@@ -3192,11 +3205,12 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		}
 	}
 	,caluclateBoardStep: function() {
-		var result = [[]];
+		var result = [];
 		var _g1 = 0;
 		var _g = Data.DIMENTIONS.x;
 		while(_g1 < _g) {
 			var i = _g1++;
+			result[i] = [];
 			var _g3 = 0;
 			var _g2 = Data.DIMENTIONS.y;
 			while(_g3 < _g2) {
@@ -3204,6 +3218,7 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 				result[i][j] = this.checkCell(i,j) ? 1 : 0;
 			}
 		}
+		this.boardDef = result;
 	}
 	,checkCell: function(x,y) {
 		if(y == null) {
@@ -3219,12 +3234,21 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 			var _g1 = -1;
 			while(_g1 < 1) {
 				var j = _g1++;
-				if(i + j != 0) {
+				var x1 = x + i;
+				var y1 = y + j;
+				if(x1 >= 0 && x1 <= Data.DIMENTIONS.x && y1 >= 0 && y1 <= Data.DIMENTIONS.y) {
 					sum += this.boardDef[x + i][y + j];
 				}
 			}
 		}
 		return Data.LIFE_RULES.indexOf(sum) > -1;
+	}
+	,checkBounds: function(x,y) {
+		if(x >= 0 && x <= Data.DIMENTIONS.x && y >= 0) {
+			return y <= Data.DIMENTIONS.y;
+		} else {
+			return false;
+		}
 	}
 	,resetBoard: function() {
 		var _g = [];
@@ -3264,19 +3288,37 @@ var Cell = function(i,j) {
 		i = -1;
 	}
 	openfl_display_Sprite.call(this);
-	this.get_graphics().beginFill(7829367);
-	this.get_graphics().drawRect(-10.,-10.,20,20);
-	this.get_graphics().endFill();
+	this.cells = [];
+	this.cells.push(this.createCellGraphics(1));
+	this.cells.push(this.createCellGraphics(2));
+	this.cells.push(this.createCellGraphics(3));
+	this.cells.push(this.createCellGraphics(4));
 	if(i + j >= 0) {
-		this.set_x(i * 20);
-		this.set_y(j * 20);
+		this.set_x(i * Data.CELL_WIDTH);
+		this.set_y(j * Data.CELL_WIDTH);
 	}
 };
 $hxClasses["Cell"] = Cell;
 Cell.__name__ = ["Cell"];
 Cell.__super__ = openfl_display_Sprite;
 Cell.prototype = $extend(openfl_display_Sprite.prototype,{
-	changeColorIndex: function(index) {
+	cells: null
+	,createCellGraphics: function(colorIndex) {
+		var spr = new openfl_display_Sprite();
+		spr.get_graphics().beginFill(Data.COLORS[colorIndex]);
+		spr.get_graphics().drawRect(-Data.CELL_WIDTH / 2,-Data.CELL_WIDTH / 2,Data.CELL_WIDTH,Data.CELL_WIDTH);
+		spr.get_graphics().endFill();
+		spr.set_cacheAsBitmap(true);
+		this.addChild(spr);
+		return spr;
+	}
+	,changeColorIndex: function(index) {
+		var _g1 = 0;
+		var _g = this.get_numChildren();
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.getChildAt(i).set_visible(i == index);
+		}
 	}
 	,__class__: Cell
 });
@@ -30138,7 +30180,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 418268;
+	this.version = 326599;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = ["lime","utils","AssetCache"];
@@ -71260,11 +71302,10 @@ if(console.log == null) {
 lime_utils_Log.throwErrors = true;
 openfl_display_DisplayObject.__broadcastEvents = new haxe_ds_StringMap();
 openfl_display_DisplayObject.__instanceCount = 0;
-Cell.SIZE = 20;
 Data.CELL_WIDTH = 20;
 Data.DIMENTIONS = { x : 20, y : 20};
-Data.LIFE_RULES = [3,4];
-Data.COLORS = ["#000000","#0000AA","#00AA00","#00AAAA","#AA0000","#AA00AA","#AA5500","#AAAAAA","#555555","#5555FF","#55FF55","#55FFFF","#FF5555","#FF55FF","#FFFF55","#FFFFFF"];
+Data.LIFE_RULES = [2,3];
+Data.COLORS = [0,170,43520,43690,11141120,11141290,11162880,11184810,5592405,5592575,5635925,5636095,16733525,16733695,16777045,16777215];
 haxe_Serializer.USE_CACHE = false;
 haxe_Serializer.USE_ENUM_INDEX = false;
 haxe_Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";

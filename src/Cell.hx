@@ -5,25 +5,40 @@ import openfl.filters.ColorMatrixFilter;
 
 class Cell extends Sprite
 {
-	static inline var SIZE:Float = 20;
-
+	var cells:Array<Sprite>;
+	
 	public function new(i:Int = -1, j:Int = -1)
 	{
 		super();
-		this.graphics.beginFill(0x777777);
-		this.graphics.drawRect(-SIZE / 2, -SIZE / 2, SIZE, SIZE);
-		this.graphics.endFill();
+		cells = new Array<Sprite>();
+		cells.push(createCellGraphics(1));
+		cells.push(createCellGraphics(2));
+		cells.push(createCellGraphics(3));
+		cells.push(createCellGraphics(4));
 
+
+//		changeColorIndex(4);
 		if (i + j >= 0)
 		{
-			x = i * SIZE;
-			y = j * SIZE;
+			x = i * Data.CELL_WIDTH;
+			y = j * Data.CELL_WIDTH;
 		}
+	}
+	
+	function createCellGraphics(colorIndex:Int):Sprite 
+	{
+		var spr = new Sprite();
+		spr.graphics.beginFill(Data.COLORS[colorIndex]);
+		//trace(Data.COLORS[colorIndex]);
+		spr.graphics.drawRect(-Data.CELL_WIDTH / 2, -Data.CELL_WIDTH  / 2, Data.CELL_WIDTH, Data.CELL_WIDTH);
+		spr.graphics.endFill();
+		spr.cacheAsBitmap = true;
+		addChild(spr);
+		return spr;
 	}
 
 	public function changeColorIndex(index:Int)
 	{
-		//this.set_filters([new ColorMatrixFilter([index, index, index, index])]);
+		for (i in 0...numChildren) getChildAt(i).visible = (i == index);
 	}
-
 }

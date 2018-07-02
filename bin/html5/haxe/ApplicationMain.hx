@@ -24,7 +24,7 @@ import haxe.macro.Expr;
 		
 		var config = {
 			
-			build: "20",
+			build: "1",
 			company: "iap",
 			file: "golopenfl",
 			fps: 60,

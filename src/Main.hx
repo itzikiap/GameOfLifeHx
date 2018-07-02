@@ -16,7 +16,19 @@ class Main extends Sprite
 		resetBoard();
 		createDisplay();
 		
-		//this.addEventListener(Event.ENTER_FRAME, this_enterFrame);
+		distributeCells();
+		renderDisplay();
+		this.addEventListener(Event.ENTER_FRAME, this_enterFrame);
+	}
+	
+	function distributeCells() 
+	{
+		for (i in 0...200) boardDef[getRand()][getRand()] = 1;
+	}
+	
+	inline function getRand():Int 
+	{
+		return Math.floor(Math.random() * Data.DIMENTIONS.x);
 	}
 	
 	function createDisplay() 
@@ -53,25 +65,34 @@ class Main extends Sprite
 	
 	function caluclateBoardStep() 
 	{
-		var result:Array2d<Int> = [[]];
+		var result:Array2d<Int> = [];
 				
 		for (i in 0...Data.DIMENTIONS.x) 
 		{
+			result[i] = [];
 			for (j in 0...Data.DIMENTIONS.y) 
 			{
 				result[i][j] = checkCell(i, j) ? 1 : 0; 
 			}
 		}
+		
+		boardDef = result;
 	}
 	
 	function checkCell(x:Int = 0, y:Int = 0):Bool {
 		var sum = 0;
 		for (i in -1...1) {
 			for (j in -1...1) {
-				if (i + j != 0) sum += boardDef[x + i][y + j];
+				if ((i != 0 || j != 0) && checkBounds(x + i, y + j)) sum += boardDef[x + i][y + j];
 			}
 		}
 		return Data.LIFE_RULES.indexOf(sum) > -1;
+	}
+	
+	inline function checkBounds(x:Int, y:Int):Bool 
+	{
+		return x >= 0 && x <= Data.DIMENTIONS.x && y >= 0 && y <= Data.DIMENTIONS.y;
+
 	}
 	
 	function resetBoard() {
