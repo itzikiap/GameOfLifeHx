@@ -23,7 +23,8 @@ class Main extends Sprite
 	
 	function distributeCells() 
 	{
-		for (i in 0...200) boardDef[getRand()][getRand()] = 1;
+		var cellsCount = Math.floor(Data.DIMENTIONS.x * Data.DIMENTIONS.y / 2);
+		for (i in 0...cellsCount) boardDef[getRand()][getRand()] = 1;
 	}
 	
 	inline function getRand():Int 
@@ -66,7 +67,6 @@ class Main extends Sprite
 	function caluclateBoardStep() 
 	{
 		var result:Array2d<Int> = [];
-				
 		for (i in 0...Data.DIMENTIONS.x) 
 		{
 			result[i] = [];
@@ -75,15 +75,14 @@ class Main extends Sprite
 				result[i][j] = checkCell(i, j) ? 1 : 0; 
 			}
 		}
-		
 		boardDef = result;
 	}
 	
-	function checkCell(x:Int = 0, y:Int = 0):Bool {
+	inline function checkCell(i:Int = 0, j:Int = 0):Bool {
 		var sum = 0;
-		for (i in -1...1) {
-			for (j in -1...1) {
-				if ((i != 0 || j != 0) && checkBounds(x + i, y + j)) sum += boardDef[x + i][y + j];
+		for (q in -1...1) {
+			for (w in -1...1) {
+				if (!(q == 0 && w == 0) && checkBounds(i + q, j + w)) sum += boardDef[i + q][j + w];
 			}
 		}
 		return Data.LIFE_RULES.indexOf(sum) > -1;
@@ -92,7 +91,6 @@ class Main extends Sprite
 	inline function checkBounds(x:Int, y:Int):Bool 
 	{
 		return x >= 0 && x <= Data.DIMENTIONS.x && y >= 0 && y <= Data.DIMENTIONS.y;
-
 	}
 	
 	function resetBoard() {

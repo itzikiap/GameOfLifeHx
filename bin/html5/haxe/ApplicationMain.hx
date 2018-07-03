@@ -24,7 +24,7 @@ import haxe.macro.Expr;
 		
 		var config = {
 			
-			build: "1",
+			build: "2",
 			company: "iap",
 			file: "golopenfl",
 			fps: 60,
@@ -40,7 +40,8 @@ import haxe.macro.Expr;
 					antialiasing: 0,
 					background: 0,
 					borderless: false,
-					depthBuffer: false,
+					colorDepth: 32,
+					depthBuffer: true,
 					display: 0,
 					fullscreen: false,
 					hardware: true,
@@ -62,6 +63,10 @@ import haxe.macro.Expr;
 		};
 		
 		lime.system.System.__registerEntryPoint (projectName, create, config);
+		
+		#if sys
+		lime.system.System.__parseArguments (config);
+		#end
 		
 		#if (hxtelemetry && !macro)
 		var telemetry = new hxtelemetry.HxTelemetry.Config ();

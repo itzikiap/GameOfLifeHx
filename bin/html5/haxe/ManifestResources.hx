@@ -53,7 +53,7 @@ import sys.FileSystem;
 		
 		var data, manifest, library;
 		
-		data = '{"name":null,"assets":"ah","version":2,"libraryArgs":[],"libraryType":null}';
+		data = '{"name":null,"assets":"ah","rootPath":null,"version":2,"libraryArgs":[],"libraryType":null}';
 		manifest = AssetManifest.parse (data, rootPath);
 		library = AssetLibrary.fromManifest (manifest);
 		Assets.registerLibrary ("default", library);
@@ -78,7 +78,7 @@ import sys.FileSystem;
 
 #elseif (desktop || cpp)
 
-@:file("") #if display private #end class __ASSET__manifest_default_json extends haxe.io.Bytes {}
+@:keep @:file("") #if display private #end class __ASSET__manifest_default_json extends haxe.io.Bytes {}
 
 
 

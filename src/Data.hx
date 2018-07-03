@@ -3,7 +3,7 @@ package;
 class Data 
 {
 	public static var CELL_WIDTH:Int = 20;
-	public static var DIMENTIONS:Main.Point = { x:20, y:20 };
+	public static var DIMENTIONS:Main.Point = { x:40, y:40 };
 	public static var LIFE_RULES:Array<Int> = [2, 3];
 	public static var COLORS = [0x000000,
 								0x0000AA,
